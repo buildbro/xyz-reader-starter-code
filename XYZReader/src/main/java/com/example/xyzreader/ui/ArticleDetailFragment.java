@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ShareCompat;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.Toolbar;
@@ -60,17 +61,11 @@ public class ArticleDetailFragment extends Fragment implements
     private long mItemId;
     private View mRootView;
     private int mMutedColor = 0xFF333333;
-    private ObservableScrollView mScrollView;
-    private DrawInsetsFrameLayout mDrawInsetsFrameLayout;
-    private ColorDrawable mStatusBarColorDrawable;
 
-    private int mTopInset;
-    private View mPhotoContainerView;
     private ImageView mPhotoView;
     private Toolbar mToolbar;
     private AppBarLayout mAppBarLayout;
-    private int mScrollY;
-    private boolean mIsCard = false;
+    private FloatingActionButton mShareFab;
 
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
 
@@ -173,6 +168,8 @@ public class ArticleDetailFragment extends Fragment implements
         mToolbar = (Toolbar) mRootView.findViewById(R.id.details_toolbar);
         mAppBarLayout = (AppBarLayout) mRootView.findViewById(R.id.appbar_layout);
 
+        mShareFab = mRootView.findViewById(R.id.share_fab);
+
 
         bodyView.setTypeface(Typeface.createFromAsset(getResources().getAssets(), "Rosario-Regular.ttf"));
 
@@ -264,6 +261,16 @@ public class ArticleDetailFragment extends Fragment implements
             };
             Picasso.get().load(mCursor.getString(ArticleLoader.Query.PHOTO_URL)).into(target);
 
+            mShareFab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(Intent.createChooser(ShareCompat.IntentBuilder.from(getActivity())
+                    .setType("text/plain")
+                    .setText("Hello story, please replace with something more meaningful")
+                    .getIntent(), getString(R.string.action_share)));
+                }
+            });
+
 
             /*ImageLoaderHelper.getInstance(getActivity()).getImageLoader()
                     .get(mCursor.getString(ArticleLoader.Query.PHOTO_URL), new ImageLoader.ImageListener() {
@@ -323,6 +330,7 @@ public class ArticleDetailFragment extends Fragment implements
         mCursor = null;
         bindViews();
     }
+
 
     public void colorNavigationBar(int primaryColor, int darkColor) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
